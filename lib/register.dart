@@ -1,56 +1,131 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; // Make sure to import your login screen file
+import 'package:http/http.dart' as http;
+import 'package:smarttracking/login_Screen.dart';
 
-class RegisterUserForm extends StatelessWidget {
+class RegisterUserForm extends StatefulWidget {
+  @override
+  _RegisterUserFormState createState() => _RegisterUserFormState();
+}
+
+class _RegisterUserFormState extends State<RegisterUserForm> {
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void registerUser() async {
+    String firstName = firstNameController.text;
+    String lastName = lastNameController.text;
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    // ตรวจสอบว่าข้อมูลไม่ควรเป็นค่าว่าง
+    if (firstName.isNotEmpty &&
+        lastName.isNotEmpty &&
+        email.isNotEmpty &&
+        password.isNotEmpty) {
+      // URL ของ API (saveregister.php)
+      String apiUrl = 'http://localhost:81//tracking_API/saveregister.php';
+
+      // สร้าง body ของ request เพื่อส่งข้อมูล
+      Map<String, dynamic> requestBody = {
+        'firstname': firstName,
+        'lastname': lastName,
+        'email': email,
+        'password': password,
+      };
+
+      try {
+        var response = await http.post(
+          Uri.parse(apiUrl),
+          body: requestBody,
+        );
+
+        if (response.statusCode == 200) {
+          showSuccessDialog(context);
+        } else {
+          print('ไม่สามารถสมัครสมาชกิได้');
+        }
+      } catch (error) {
+        print('เกิดข้อผิดผลาดในการเชื่อมต่อ : $error');
+      }
+    } else {
+      // แจ้งเตือนถ้าข้อมูลไม่ครบ
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('ข้อมูลไม่ครบถ้วน'),
+            content: Text('กรุณากรอกข้อมูลให้ครบทุกช่อง'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('ตกลง'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ลงทะเบียน'),
+        title: Text('Register Form'),
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Add any registration-specific fields here
-              TextFormField(
-                decoration: InputDecoration(labelText: 'ชื่อ'),
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'นามสกุล'),
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'อีเมล'),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'รหัสผ่าน'),
-                obscureText: true,
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  // Implement registration logic here
-
-                  // After successful registration, navigate back to the login screen
-                  Navigator.of(context).pop();
-                },
-                child: Text('ลงทะเบียน'),
-                style: OutlinedButton.styleFrom(
-                  fixedSize: Size(300, 50),
-                  side: BorderSide(
-                    color: Color.fromARGB(255, 164, 128, 225),
-                    width: 2.0,
-                  ),
-                  backgroundColor: Color.fromARGB(255, 164, 128, 225),
-                ),
-              ),
-            ],
-          ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: firstNameController,
+              decoration: InputDecoration(labelText: 'Firstname'),
+            ),
+            TextFormField(
+              controller: lastNameController,
+              decoration: InputDecoration(labelText: 'Lastname'),
+            ),
+            TextFormField(
+              controller: emailController,
+              decoration: InputDecoration(labelText: 'Email'),
+            ),
+            TextFormField(
+              controller: passwordController,
+              decoration: InputDecoration(labelText: 'Password'),
+            ),
+            ElevatedButton(
+              onPressed: registerUser,
+              child: Text('บันทึก'),
+            ),
+          ],
         ),
       ),
     );
   }
+}
+
+void showSuccessDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Successfully'),
+        content: Text('Your information has been successfully saved..'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ));
+            },
+            child: Text('Goto Login Page'),
+          ),
+        ],
+      );
+    },
+  );
 }
