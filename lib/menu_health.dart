@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smarttracking/healthSave.dart';
+import 'healthSave.dart'; // Import your HealthSaveScreen file
 
 class MenuHealthScreen extends StatelessWidget {
   @override
@@ -51,6 +53,17 @@ class MenuHealthScreen extends StatelessWidget {
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
               ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to HealthSaveScreen when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HealthSaveScreen()),
+                );
+              },
+              child: Text('Go to Health Save'),
             ),
           ],
         ),
