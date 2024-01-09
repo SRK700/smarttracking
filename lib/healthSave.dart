@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Import services for FilteringTextInputFormatter
 import 'package:http/http.dart' as http;
 
 class HealthSaveScreen extends StatefulWidget {
@@ -74,11 +75,17 @@ class _HealthSaveScreenState extends State<HealthSaveScreen> {
             SizedBox(height: 8.0),
             TextFormField(
               controller: _heartValueController,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // Allow digits only
+              ],
               decoration: InputDecoration(labelText: 'Heart Value'),
             ),
             SizedBox(height: 8.0),
             TextFormField(
               controller: _pulseValueController,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, // Allow digits only
+              ],
               decoration: InputDecoration(labelText: 'Pulse Value'),
             ),
             SizedBox(height: 16.0),
