@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:smarttracking/EditDataPage.dart';
+import 'package:smarttracking/deleteHealth.dart';
 
 class HealthDataPage extends StatefulWidget {
   @override
@@ -26,6 +28,11 @@ class _HealthDataPageState extends State<HealthDataPage> {
   void initState() {
     super.initState();
     _healthData = _fetchHealthData();
+  }
+
+  Future<void> _deleteHealthData(String docno) async {
+    // Implement logic to delete health data based on docno
+    // ...
   }
 
   @override
@@ -68,7 +75,7 @@ class _HealthDataPageState extends State<HealthDataPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'images/icon_temp.png',
+                      'images/fever.png',
                       width: 40,
                       height: 40,
                     ),
@@ -87,32 +94,56 @@ class _HealthDataPageState extends State<HealthDataPage> {
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
                       columns: <DataColumn>[
-                        DataColumn(label: Text(' ')),
+                        DataColumn(label: Icon(Icons.show_chart)), // Show icon
                         DataColumn(label: Text('Name')),
                         DataColumn(label: Text('Surname')),
                         DataColumn(label: Text('Temp.')),
                         DataColumn(label: Text('Edit')),
+                        DataColumn(label: Text('Delete')),
                       ],
                       rows: snapshot.data!.map((data) {
                         return DataRow(
                           cells: <DataCell>[
-                            DataCell(Text(' ')),
+                            DataCell(
+                              IconButton(
+                                icon: Icon(Icons.visibility),
+                                onPressed: () {
+                                  // Implement logic to show details for the selected data
+                                  // ...
+                                },
+                              ),
+                            ),
                             DataCell(Text(data['firstname'].toString())),
                             DataCell(Text(data['lastname'].toString())),
                             DataCell(Text(data['heart_value'].toString())),
-                            DataCell(IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                // Navigate to the edit page with the selected data
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditHealthDataPage(data: data),
-                                  ),
-                                );
-                              },
-                            )),
+                            DataCell(
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditDataPage(data: data),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            DataCell(
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          DeleteHealthDataPage(data: data),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
                           ],
                         );
                       }).toList(),
@@ -138,9 +169,23 @@ class EditHealthDataPage extends StatefulWidget {
 }
 
 class _EditHealthDataPageState extends State<EditHealthDataPage> {
+  late TextEditingController firstNameController;
+  late TextEditingController lastNameController;
+  late TextEditingController heartValueController;
+
+  @override
+  void initState() {
+    super.initState();
+    firstNameController =
+        TextEditingController(text: widget.data['firstname'].toString());
+    lastNameController =
+        TextEditingController(text: widget.data['lastname'].toString());
+    heartValueController =
+        TextEditingController(text: widget.data['heart_value'].toString());
+  }
+
   @override
   Widget build(BuildContext context) {
-    // TODO: Implement the edit page UI
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Health Data'),
@@ -148,11 +193,21 @@ class _EditHealthDataPageState extends State<EditHealthDataPage> {
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
-          // Implement the edit page UI
           children: [
             Text('Edit Health Data for ${widget.data['firstname']}'),
-            // Implement text fields for editing data
-            // ...
+            TextFormField(
+              controller: firstNameController,
+              decoration: InputDecoration(labelText: 'First Name'),
+            ),
+            TextFormField(
+              controller: lastNameController,
+              decoration: InputDecoration(labelText: 'Last Name'),
+            ),
+            TextFormField(
+              controller: heartValueController,
+              decoration: InputDecoration(labelText: 'Heart Value'),
+            ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 // Implement logic to save the edited data

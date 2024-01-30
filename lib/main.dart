@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smarttracking/gauges.dart';
 import 'package:smarttracking/splash_screen.dart';
 
 void main() {
@@ -11,7 +12,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SplashScreen(), //เรียกหน้า splash
+      home: HealthTemp(), //เรียกหน้า splash
     );
   }
 }
